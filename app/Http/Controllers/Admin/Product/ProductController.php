@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\AbstractAPIResponse;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ProductController extends Controller
+class ProductController extends AbstractAPIResponse
 {
     public function index()
     {
@@ -17,22 +17,11 @@ class ProductController extends Controller
         return $products;
     }
 
-    public function destroy($id)
-    {
-        $product = Product::find($id);
-        if (!$product) {
-            return $this->getResponseAnswer(false, 'Product not found', null, 422);
-        }
-
-        $product->delete();
-        return $this->getResponseAnswer(true, 'Product deleted successfully', null, 200);
-    }
-
     public function show($id)
     {
         $product = Product::with(['category', 'brand'])->find($id);
         if (!$product) {
-            return $this->getResponseAnswer(false, 'Product not found', null, 404);
+            return $this->findOrFailItem(false, 'Product not found', null, 404);
         }
         return $product;
     }
@@ -58,12 +47,23 @@ class ProductController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->getResponseAnswer(false, $validator->errors(), null, 422);
+            return $this->findOrFailItem(false, $validator->errors(), null, 422);
         }
         $validated = $validator->validated();
 
         $product = Product::create($validated);
 
-        return $this->getResponseAnswer(true, 'Poduct created succesfuly', $product, 200);
+        return $this->findOrFailItem(true, 'Poduct created succesfuly', $product, 200);
+    }
+
+    public function destroy($id)
+    {
+        $product = Product::find($id);
+        if (!$product) {
+            return $this->findOrFailItem(false, 'Product not found', null, 422);
+        }
+
+        $product->delete();
+        return $this->findOrFailItem(true, 'Product deleted successfully', null, 200);
     }
 }

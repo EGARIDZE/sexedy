@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Product;
 
+use App\Http\Controllers\Admin\AbstractAPIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Attribute;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class AttributeController extends Controller
+class AttributeController extends AbstractAPIResponse
 {
     public function index()
     {
@@ -22,12 +23,12 @@ class AttributeController extends Controller
             'name' => 'required|string|max:255|unique:attributes,name',
         ]);
         if ($validator->fails()) {
-            return $this->getResponseAnswer(false, 'Enter correct parameters', $validator->errors(), 422);
+            return $this->findOrFailItem(false, 'Enter correct parameters', $validator->errors(), 422);
         }
 
         $validatedData = $validator->validated();
         $newAttribute = Attribute::create($validatedData);
-        return $this->getResponseAnswer(true, 'Attribute create succsesfuly', $newAttribute, 200);
+        return $this->findOrFailItem(true, 'Attribute create succsesfuly', $newAttribute, 200);
     }
 
 
@@ -35,10 +36,10 @@ class AttributeController extends Controller
     {
         $attribute  = Attribute::find($attribute_id);
         if (!$attribute) {
-            return $this->getResponseAnswer(false, 'Attribute not found', null, 404);
+            return $this->findOrFailItem(false, 'Attribute not found', null, 404);
         }
 
         $attribute->delete();
-        return $this->getResponseAnswer(true, 'Attribute was deleted', null, 200);
+        return $this->findOrFailItem(true, 'Attribute was deleted', null, 200);
     }
 }
