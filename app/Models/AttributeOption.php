@@ -5,26 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AttributeOption extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['attribute_id', 'value', 'image_path'];
+    protected $fillable = ['attribute_id', 'offer_id', 'value'];
 
-    public function attribute()
+    public $timestamps = false;
+
+    public function attribute(): BelongsTo
     {
         return $this->belongsTo(Attribute::class);
     }
 
-    public function skus()
+    public function offer(): BelongsTo
     {
-        return $this->belongsToMany(Sku::class, 'attribute_option_sku');
-    }
-
-    public function images():HasMany
-    {
-        return $this->hasMany(AttributeOptionImage::class);
+        return $this->belongsTo(Offer::class);
     }
 }

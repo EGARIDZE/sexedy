@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
+            $table->string('name');
             $table->string('code')->unique();
             $table->integer('price');
             $table->integer('discount')->default(0);
